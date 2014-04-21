@@ -13,7 +13,12 @@ class MainWidget( QWidget ):
 	QWidget.__init__( self )
 	self.createSystemTray()
 	self.createUI()
+	self.setWindowTitle( u'小定时器' )
+	#then the size policy
+	self.setSizePolicy( QSizePolicy.Maximum, QSizePolicy.Maximum )
 	self.quitWithoutTray = False
+	#then the positon/geometry
+	self.setGeometry( 400, 400, self.size().width(), self.size().height() )
 
     def closeEvent( self, evt ):
 	if self.quitWithoutTray:
@@ -28,6 +33,9 @@ class MainWidget( QWidget ):
 	    self.hide()
 	elif ( evt.key() == Qt.Key_Q and evt.modifiers()&Qt.ControlModifier ):
 	    self.noTrayClose()
+	#global shortcut to invoke the app, not implemented
+	elif ( evt.key() == Qt.Key_T and evt.modifiers()&Qt.AltModifier ):
+	    self.show()
 	else:
 	    QWidget.keyPressEvent( self, evt )
 
@@ -59,8 +67,13 @@ class MainWidget( QWidget ):
 
     @pyqtSlot()
     def timeOutMsg( self ):
-	self.systemTray.showMessage( u'时间到了', u"<h>真的到了</h>", QSystemTrayIcon.Information, \
+	self.systemTray.showMessage( u'时间到了', u'真的到了', QSystemTrayIcon.Information, \
 		2000 )
+	self.msgLabel = QLabel( u'<h1>时间到!</h1><img src="./38.gif"/>' )
+	self.msgLabel.setWindowFlags( Qt.FramelessWindowHint )
+	self.msgLabel.setGeometry( 400, 400, self.size().width(), self.size().height() )
+	self.timer.singleShot( 2800, self.msgLabel, SLOT('hide()') )
+	self.msgLabel.show()
     @pyqtSlot()
     def noTrayClose( self ):
 	self.quitWithoutTray = True
@@ -72,6 +85,7 @@ class MainWidget( QWidget ):
 	if len(text) < 1:
 	    text =  self.nowTimeText
 	self.ui.labelStartTime.setText( text )
+
     def createSystemTray( self ):
 	self.systemTray = QSystemTrayIcon( self )
 	self.trayIcon = QIcon( 'tray.ico' )

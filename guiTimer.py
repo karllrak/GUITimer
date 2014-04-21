@@ -14,12 +14,14 @@ class MainWidget( QWidget ):
 	self.createSystemTray()
 	self.createUI()
 	self.quitWithoutTray = False
+
     def closeEvent( self, evt ):
 	if self.quitWithoutTray:
 	    evt.accept()
 	else:
 	    self.hide()
 	    evt.ignore()
+
     def keyPressEvent( self, evt ):
 	if evt.key() == Qt.Key_Escape or (evt.key() == Qt.Key_W\
 		and evt.modifiers() & Qt.ControlModifier ):
@@ -28,11 +30,12 @@ class MainWidget( QWidget ):
 	    self.noTrayClose()
 	else:
 	    QWidget.keyPressEvent( self, evt )
+
     @pyqtSlot(int)
     def trayActivated( self, reason ):
-	print 'trayActivated'
 	if QSystemTrayIcon.DoubleClick == reason:
 	    self.show()
+
     def createUI( self ):
 	self.ui = Ui_Form()
 	self.ui.setupUi( self )
@@ -44,6 +47,7 @@ class MainWidget( QWidget ):
 	self.connect( self.ui.btnStartTimer, SIGNAL('clicked()'), \
 		self.startTimer )
 	self.ui.lineEditTimeCount.setFocus()
+
     def startTimer( self ):
 	self.timer = QTimer()
 	minute = self.ui.lineEditTimeCount.text()
@@ -55,12 +59,13 @@ class MainWidget( QWidget ):
 
     @pyqtSlot()
     def timeOutMsg( self ):
-	self.systemTray.showMessage( u'时间到了', u'真的到了', QSystemTrayIcon.Information, \
+	self.systemTray.showMessage( u'时间到了', u"<h>真的到了</h>", QSystemTrayIcon.Information, \
 		2000 )
     @pyqtSlot()
     def noTrayClose( self ):
 	self.quitWithoutTray = True
 	self.close()
+
     @pyqtSlot()
     def updateStartTime( self ):
 	text = self.ui.lineEditStartTime.text()
@@ -69,7 +74,7 @@ class MainWidget( QWidget ):
 	self.ui.labelStartTime.setText( text )
     def createSystemTray( self ):
 	self.systemTray = QSystemTrayIcon( self )
-	self.trayIcon = QIcon( '/home/karllrak/py/tray.ico' )
+	self.trayIcon = QIcon( 'tray.ico' )
 	self.trayMenu = QMenu( self )
 	self.exitAction = QAction( u'退出', self )
 	self.showAction = QAction( u'显示', self )
@@ -79,7 +84,8 @@ class MainWidget( QWidget ):
 	self.trayMenu.addAction( self.showAction )
 	self.systemTray.setContextMenu( self.trayMenu )
 	self.systemTray.setIcon( self.trayIcon )
-	self.connect( self.systemTray, SIGNAL('activated(int)'), self.trayActivated )
+	#self.connect( self.systemTray, SIGNAL('activated(int)'), self.trayActivated )
+	self.systemTray.activated.connect( self.trayActivated )
 	self.systemTray.show()
     pass
 

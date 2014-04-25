@@ -6,14 +6,19 @@ from PyQt4.QtGui import *
 from ui_guiTimer import Ui_Form
 import sys
 import time
+import datetime
+import pdb
 
 
 class MainWidget( QWidget ):
+    """ the widget """
     def __init__( self ):
+	''' the init function '''
 	QWidget.__init__( self )
 	self.createSystemTray()
 	self.createUI()
-	self.setWindowTitle( u'小定时器' )
+	self.createConnections()
+	self.setWindowTitle( u'定时器' )
 	#then the size policy
 	self.setSizePolicy( QSizePolicy.Maximum, QSizePolicy.Maximum )
 	self.quitWithoutTray = False
@@ -21,16 +26,27 @@ class MainWidget( QWidget ):
 	self.setGeometry( 400, 400, self.size().width(), self.size().height() )
 
     def closeEvent( self, evt ):
+	'''
+	override the closeEvent to decide whether use systemTray
+	'''
 	if self.quitWithoutTray:
 	    evt.accept()
 	else:
 	    self.hide()
 	    evt.ignore()
 
+    def showAllShortCut( self ):
+	'''
+	not implemented
+	show all shortcuts set
+	'''
+	pass
     def keyPressEvent( self, evt ):
 	if evt.key() == Qt.Key_Escape or (evt.key() == Qt.Key_W\
 		and evt.modifiers() & Qt.ControlModifier ):
 	    self.hide()
+	    if self.msgLabel.isVisible():
+		self.msgLabel.hide()
 	elif ( evt.key() == Qt.Key_Q and evt.modifiers()&Qt.ControlModifier ):
 	    self.noTrayClose()
 	#global shortcut to invoke the app, not implemented
@@ -50,13 +66,18 @@ class MainWidget( QWidget ):
 	self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 
 	self.ui.labelStartTime.setText( self.nowTimeText )
 	self.ui.labelEndTime.setText( '' )
+	self.ui.lineEditTimeCount.setFocus()
+	self.msgLabel = QLabel( u'<h1>时间到!</h1><img src="./38.gif"/>' )
+
+    def createConnections( self ):
 	self.connect( self.ui.btnSetStartTime, SIGNAL('clicked()'),\
 		self.updateStartTime )
 	self.connect( self.ui.btnStartTimer, SIGNAL('clicked()'), \
 		self.startTimer )
-	self.ui.lineEditTimeCount.setFocus()
 
     def startTimer( self ):
+	self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 
+	self.ui.labelStartTime.setText( self.nowTimeText )
 	self.timer = QTimer()
 	minute = self.ui.lineEditTimeCount.text()
 	try:
@@ -64,26 +85,49 @@ class MainWidget( QWidget ):
 	except ValueError:
 	    return
 	self.timer.singleShot( minute*60*1000, self, SLOT('timeOutMsg()'))
+	dueTimeText = datetime.datetime.fromtimestamp( time.time() + minute*60 ).strftime( u'%H:%M:%S'.encode('utf8') ).decode( 'utf8' )
+	self.ui.labelEndTime.setText( dueTimeText )
+	self.mainTimerTimeout = False
+
+	self.intervalNoticeTime = self.ui.intervalNoticeEdit.text()
+	if self.intervalNoticeTime != '':
+	    try:
+		self.intervalNoticeTime = float( self.intervalNoticeTime )
+	    except ValueError:
+		return
+	    self.intervalTimer = QTimer()
+	    self.intervalTimer.singleShot( self.intervalNoticeTime*60*1000, self, SLOT('intervalNoticeMsg()'))
+
+    @pyqtSlot()
+    def intervalNoticeMsg( self ):
+	if not self.mainTimerTimeout:
+	    self.systemTray.showMessage( u'友情提醒', u'已经过了'+unicode(self.intervalNoticeTime)+u'分钟', QSystemTrayIcon.Information, 2000 )
+	    self.intervalTimer.singleShot( self.intervalNoticeTime*60*1000, self, SLOT('intervalNoticeMsg()'))
+
 
     @pyqtSlot()
     def timeOutMsg( self ):
-	self.systemTray.showMessage( u'时间到了', u'真的到了', QSystemTrayIcon.Information, \
-		2000 )
-	self.msgLabel = QLabel( u'<h1>时间到!</h1><img src="./38.gif"/>' )
-	self.msgLabel.setWindowFlags( Qt.FramelessWindowHint )
+	#self.msgLabel.setWindowFlags( Qt.FramelessWindowHint )
 	self.msgLabel.setGeometry( 400, 400, self.size().width(), self.size().height() )
-	self.timer.singleShot( 2800, self.msgLabel, SLOT('hide()') )
+	#self.timer.singleShot( 2800, self.msgLabel, SLOT('hide()') )
 	self.msgLabel.show()
+	self.mainTimerTimeout = True
+
     @pyqtSlot()
     def noTrayClose( self ):
 	self.quitWithoutTray = True
 	self.close()
+	sys.exit()
 
     @pyqtSlot()
     def updateStartTime( self ):
 	text = self.ui.lineEditStartTime.text()
 	if len(text) < 1:
+	    self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 
 	    text =  self.nowTimeText
+	else:
+	    infer = TimeInference( text )
+
 	self.ui.labelStartTime.setText( text )
 
     def createSystemTray( self ):
@@ -103,8 +147,10 @@ class MainWidget( QWidget ):
 	self.systemTray.show()
     pass
 
-a = QApplication( sys.argv )
-mywidget = MainWidget()
-mywidget.show()
-sys.exit( a.exec_() )
+if __name__ == "__main__":
+    a = QApplication( sys.argv )
+    a.setQuitOnLastWindowClosed( False )
+    mywidget = MainWidget()
+    mywidget.show()
+    sys.exit( a.exec_() )
 

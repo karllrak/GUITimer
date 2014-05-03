@@ -4,6 +4,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ui_guiTimer import Ui_Form
+import qrc_guiTimer
 import sys
 import time
 import datetime
@@ -57,7 +58,7 @@ class MainWidget( QWidget ):
 
     @pyqtSlot(int)
     def trayActivated( self, reason ):
-	if QSystemTrayIcon.DoubleClick == reason:
+	if QSystemTrayIcon.DoubleClick == reason or QSystemTrayIcon.Trigger == reason:
 	    self.show()
 
     def createUI( self ):
@@ -67,7 +68,7 @@ class MainWidget( QWidget ):
 	self.ui.labelStartTime.setText( self.nowTimeText )
 	self.ui.labelEndTime.setText( '' )
 	self.ui.lineEditTimeCount.setFocus()
-	self.msgLabel = QLabel( u'<h1>时间到!</h1><img src="./38.gif"/>' )
+	self.msgLabel = QLabel( u'<h1>时间到!</h1><img src=":/img/38.gif"/>' )
 
     def createConnections( self ):
 	self.connect( self.ui.btnSetStartTime, SIGNAL('clicked()'),\
@@ -96,13 +97,13 @@ class MainWidget( QWidget ):
 	    except ValueError:
 		return
 	    self.intervalTimer = QTimer()
-	    self.intervalTimer.singleShot( self.intervalNoticeTime*60*1000, self, SLOT('intervalNoticeMsg()'))
+	    QTimer.singleShot( self.intervalNoticeTime*60*1000, self, SLOT('intervalNoticeMsg()'))
 
     @pyqtSlot()
     def intervalNoticeMsg( self ):
 	if not self.mainTimerTimeout:
-	    self.systemTray.showMessage( u'友情提醒', u'已经过了'+unicode(self.intervalNoticeTime)+u'分钟', QSystemTrayIcon.Information, 2000 )
-	    self.intervalTimer.singleShot( self.intervalNoticeTime*60*1000, self, SLOT('intervalNoticeMsg()'))
+	    self.systemTray.showMessage( u'友情提醒', u'已经过了'+unicode(self.intervalNoticeTime)+u'分钟\n'+u'有木有!'*20, QSystemTrayIcon.Information, 2000 )
+	    QTimer.singleShot( self.intervalNoticeTime*60*1000, self, SLOT('intervalNoticeMsg()'))
 
 
     @pyqtSlot()
@@ -132,7 +133,7 @@ class MainWidget( QWidget ):
 
     def createSystemTray( self ):
 	self.systemTray = QSystemTrayIcon( self )
-	self.trayIcon = QIcon( 'tray.ico' )
+	self.trayIcon = QIcon( ':/systemTray/tray.ico' )
 	self.trayMenu = QMenu( self )
 	self.exitAction = QAction( u'退出', self )
 	self.showAction = QAction( u'显示', self )

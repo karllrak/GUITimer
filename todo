@@ -1,2 +1,7 @@
-add a label show all shortcut
-configurable shorcuts
+SHORTCUT
+    add a label show all shortcut
+    configurable shorcuts
+show how many interval have passed and show in the intervalNoticeMsg as well as the main window
+
+personal event Management
+    done! add event log support using sqlite3 

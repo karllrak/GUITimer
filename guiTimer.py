@@ -4,10 +4,11 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ui_guiTimer import Ui_Form
-import qrc_guiTimer
+import qrc_guiTimer_rc
 import sys
 import time
 import datetime
+import DB
 import pdb
 
 
@@ -26,6 +27,8 @@ class MainWidget( QWidget ):
 	#then the positon/geometry
 	self.setGeometry( 400, 400, self.size().width(), self.size().height() )
 
+	DB.initTables()
+
     def closeEvent( self, evt ):
 	'''
 	override the closeEvent to decide whether use systemTray
@@ -42,6 +45,7 @@ class MainWidget( QWidget ):
 	show all shortcuts set
 	'''
 	pass
+
     def keyPressEvent( self, evt ):
 	if evt.key() == Qt.Key_Escape or (evt.key() == Qt.Key_W\
 		and evt.modifiers() & Qt.ControlModifier ):
@@ -75,6 +79,8 @@ class MainWidget( QWidget ):
 		self.updateStartTime )
 	self.connect( self.ui.btnStartTimer, SIGNAL('clicked()'), \
 		self.startTimer )
+	self.connect( self.ui.btnComplete, SIGNAL('clicked()'), \
+		self.missionComplete )
 
     def startTimer( self ):
 	self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 
@@ -89,6 +95,10 @@ class MainWidget( QWidget ):
 	dueTimeText = datetime.datetime.fromtimestamp( time.time() + minute*60 ).strftime( u'%H:%M:%S'.encode('utf8') ).decode( 'utf8' )
 	self.ui.labelEndTime.setText( dueTimeText )
 	self.mainTimerTimeout = False
+	self.mission = DB.dailyEvent()
+	desc = self.ui.LEDescription.text()
+	if len(desc) != 0:
+	    self.mission.setDescription( desc )
 
 	self.intervalNoticeTime = self.ui.intervalNoticeEdit.text()
 	if self.intervalNoticeTime != '':
@@ -97,14 +107,22 @@ class MainWidget( QWidget ):
 	    except ValueError:
 		return
 	    self.intervalTimer = QTimer()
+	    self.intervalCount = 0
 	    QTimer.singleShot( self.intervalNoticeTime*60*1000, self, SLOT('intervalNoticeMsg()'))
 
     @pyqtSlot()
     def intervalNoticeMsg( self ):
-	if not self.mainTimerTimeout:
-	    self.systemTray.showMessage( u'友情提醒', u'已经过了'+unicode(self.intervalNoticeTime)+u'分钟\n'+u'有木有!'*20, QSystemTrayIcon.Information, 2000 )
+	if not self.mission.isComplete():
+	    self.intervalCount = self.intervalCount + 1
+	    self.systemTray.showMessage( u'友情提醒', u'已经过了'+unicode( self.intervalCount )+u'个'+unicode(self.intervalNoticeTime)+u'分钟\n'+u'有木有!'*20, QSystemTrayIcon.Information, 2000 )
 	    QTimer.singleShot( self.intervalNoticeTime*60*1000, self, SLOT('intervalNoticeMsg()'))
 
+
+    @pyqtSlot()
+    def missionComplete( self ):
+	self.mission.setEndTimeNow()
+	self.mission.setComplete()
+	self.mission.storeEvent()
 
     @pyqtSlot()
     def timeOutMsg( self ):
@@ -112,6 +130,7 @@ class MainWidget( QWidget ):
 	self.msgLabel.setGeometry( 400, 400, self.size().width(), self.size().height() )
 	#self.timer.singleShot( 2800, self.msgLabel, SLOT('hide()') )
 	self.msgLabel.show()
+	self.mission.setTimeouted()
 	self.mainTimerTimeout = True
 
     @pyqtSlot()

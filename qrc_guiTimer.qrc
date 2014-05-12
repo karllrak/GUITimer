@@ -4,5 +4,6 @@
     </qresource>
     <qresource prefix="/img">
         <file>38.gif</file>
+        <file>aaaa.jpg</file>
     </qresource>
 </RCC>

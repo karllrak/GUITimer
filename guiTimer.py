@@ -27,6 +27,7 @@ class MainWidget( QWidget ):
 	#then the positon/geometry
 	self.setGeometry( 400, 400, self.size().width(), self.size().height() )
 
+	self.mission = None
 	DB.initTables()
 
     def closeEvent( self, evt ):
@@ -34,6 +35,8 @@ class MainWidget( QWidget ):
 	override the closeEvent to decide whether use systemTray
 	'''
 	if self.quitWithoutTray:
+	    if None != self.mission:
+		self.mission.storeEvent()
 	    evt.accept()
 	else:
 	    self.hide()

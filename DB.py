@@ -3,9 +3,11 @@
 import sqlite3
 import datetime
 import time
+import os
+from config import APPLICATION_PATH
 
 def initTables():
-    con = sqlite3.connect('event.db')
+    con = sqlite3.connect( os.sep.join([APPLICATION_PATH,'event.db']) )
     c = con.cursor()
     c.execute( 'create table if not exists dailyEvent('+\
 	    'description text,'+\
@@ -52,7 +54,7 @@ class dailyEvent:
 	    finished = 1
 	else:
 	    finished = 0
-	con = sqlite3.connect( 'event.db' )
+	con = sqlite3.connect( os.sep.join( [APPLICATION_PATH,'event.db'] ) )
 	c = con.cursor()
 	c.execute( 'insert into dailyEvent(description, startTime, endTime, timeouted, finished)  values  (?, ?, ?, ?, ?)',
 		    ( unicode(self.description),

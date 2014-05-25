@@ -4,4 +4,16 @@ SHORTCUT
 show how many interval have passed and show in the intervalNoticeMsg as well as the main window
 
 personal event Management
-    done! add event log support using sqlite3 
+    [done!] add event log support using sqlite3 
+
+DATABASESHOW
+FIXME:
+    [done!] use a right path(the same path with guitimer.py) instead of 'event.db'
+	:: use getattr( sys, 'executable', False ): in config.py
+
+FIXME:
+    when using a 10min interval notice, and complete a task. 
+    Then start another, the notice remains and does not start a new 10min count.(it will notice you in 3minutes or some other)
+    and why the interval changeTo 5min?
+
+	::the startTimer function is too large with too much responsibilities

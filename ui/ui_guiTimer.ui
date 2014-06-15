@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>309</width>
-    <height>155</height>
+    <height>201</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -140,8 +140,17 @@ background-color: rgb(253, 193, 255);</string>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>lineEditTimeCount</tabstop>
+  <tabstop>intervalNoticeEdit</tabstop>
+  <tabstop>LEDescription</tabstop>
+  <tabstop>btnStartTimer</tabstop>
+  <tabstop>btnComplete</tabstop>
+  <tabstop>btnSetStartTime</tabstop>
+  <tabstop>lineEditStartTime</tabstop>
+ </tabstops>
  <resources>
-  <include location="qrc_guiTimer.qrc"/>
+  <include location="../res/qrc_guiTimer.qrc"/>
  </resources>
  <connections/>
 </ui>

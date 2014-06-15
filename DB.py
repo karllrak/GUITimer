@@ -18,6 +18,15 @@ def initTables():
     con.commit()
     con.close()
 
+def getLatestEvent( count = 1 ):
+    con = sqlite3.connect( os.sep.join([APPLICATION_PATH, 'event.db']) )
+    c = con.cursor()
+    c.execute( 'select * from dailyEvent order by rowid desc limit ?', (count,) )
+    data = c.fetchall()
+    con.commit()
+    con.close()
+    return data
+
 class dailyEvent:
     def __init__( self ):
 	self.startTime = time.strftime('%Y-%m-%d %H:%M:%S')
@@ -66,4 +75,5 @@ class dailyEvent:
 	con.commit()
 	con.close()
 
-
+if __name__ == '__main__':
+    print getLatestEvent( 2 )

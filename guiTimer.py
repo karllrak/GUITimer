@@ -3,8 +3,8 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from ui_guiTimer import Ui_Form
-import qrc_guiTimer_rc
+from ui.ui_guiTimer import Ui_Form
+import ui.qrc_guiTimer_rc
 import sys
 import time
 import datetime
@@ -103,7 +103,7 @@ class MainWidget( QWidget ):
 	self.ui.labelEndTime.setText( dueTimeText )
 
 	self.mission = DB.dailyEvent()
-	desc = self.ui.LEDescription.text()
+	desc = self.ui.LEDescription.toPlainText()
 	if len(desc) != 0:
 	    self.mission.setDescription( desc )
 	

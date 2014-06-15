@@ -2,3 +2,9 @@
 
 *.ico
 *.db
+
+#auto-generated files
+qrc_guiTimer_rc.py
+ui_guiTimer.py
+ui/todo
+ui/ui_dataShow.py

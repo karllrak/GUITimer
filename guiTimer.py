@@ -54,6 +54,7 @@ class MainWidget( QWidget ):
 	if evt.key() == Qt.Key_Escape or (evt.key() == Qt.Key_W\
 		and evt.modifiers() & Qt.ControlModifier ):
 	    self.hide()
+	    self.msgLabel.hide()#TODO no esc effect
 	    if self.msgLabel.isVisible():
 		self.msgLabel.hide()
 	elif ( evt.key() == Qt.Key_Q and evt.modifiers()&Qt.ControlModifier ):
@@ -77,6 +78,7 @@ class MainWidget( QWidget ):
 	self.ui.labelEndTime.setText( '' )
 	self.ui.lineEditTimeCount.setFocus()
 	self.msgLabel = QLabel( u'<h1>时间到!</h1><img src=":/img/38.gif"/>' )
+	self.ui.btnComplete.setDisabled( True )
 
     def createConnections( self ):
 	self.connect( self.ui.btnSetStartTime, SIGNAL('clicked()'),\
@@ -89,6 +91,7 @@ class MainWidget( QWidget ):
     def startTimer( self ):
 	self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 
 	self.ui.labelStartTime.setText( self.nowTimeText )
+	self.ui.btnComplete.setDisabled( False )
 
 	self.timer = QTimer()
 	minute = self.ui.lineEditTimeCount.text()
@@ -140,12 +143,15 @@ class MainWidget( QWidget ):
 	self.intervalCount = 0
 	self.mission.setComplete()
 	self.mission.storeEvent()
+	self.ui.btnComplete.setDisabled( True )
 
     @pyqtSlot()
     def timeOutMsg( self ):
 	#self.msgLabel.setWindowFlags( Qt.FramelessWindowHint )
 	self.msgLabel.setGeometry( 400, 400, self.size().width(), self.size().height() )
 	#self.timer.singleShot( 2800, self.msgLabel, SLOT('hide()') )
+	self.msgLabel.raise_()
+	self.msgLabel.activateWindow()
 	self.msgLabel.show()
 	self.mission.setTimeouted()
 	self.mainTimerTimeout = True

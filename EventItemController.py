@@ -7,6 +7,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ViewEventItem import EventShowWidget
 
+def dyeRow( widget, rowNo, columnRange, color ):
+    for i in range( columnRange[0], columnRange[1] ):
+	widget.item( rowNo, i ).setBackground( QBrush(  color ))
+
 def insertDataToRow( widget, data, rowNumber ):
     curDate = datetime.datetime.now()
     startTime = datetime.datetime.strptime( data[1], '%Y-%m-%d %H:%M:%S' )
@@ -21,16 +25,16 @@ def insertDataToRow( widget, data, rowNumber ):
 	    d = u'是'
 	widget.setItem( rowNumber, j, QTableWidgetItem( d ) )
 
-    #highlight today 
-    if isToday:
-	for i in range( len(data) ):
-	    widget.item( rowNumber, i ).setBackground( QBrush( QColor( 180, 128, 180 ) ) )
+    if abs( delta.days ) < 60: 
+	color = QColor( 255+delta.days*4, 140+delta.days*2, 75-delta.days*3 )#TODO a better way to show time difference using color
+	dyeRow( widget=widget, rowNo=rowNumber, columnRange=(0,len(data)), color=color )
 
 if '__main__' == __name__:
     import sys
     app = QApplication( sys.argv )
     dataCount = 20
-    data = DB.getLatestEvent( dataCount )
+    #data = DB.getLatestEvent( dataCount )
+    data = DB.getEventByPage( 1, 5 )
     w = EventShowWidget()
     t = w.ui.tableShowWidget
     for i in range( 5 ):

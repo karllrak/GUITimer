@@ -7,7 +7,7 @@ import os
 from config import APPLICATION_PATH
 
 def initTables():
-    con = sqlite3.connect( os.sep.join([APPLICATION_PATH,'event.db']) )
+    con = getDBConnection()
     c = con.cursor()
     c.execute( 'create table if not exists dailyEvent('+\
 	    'description text,'+\
@@ -18,8 +18,24 @@ def initTables():
     con.commit()
     con.close()
 
+def getDBConnection():
+    '''
+    remember to close it!
+    '''
+    return sqlite3.connect( os.sep.join([APPLICATION_PATH, 'event.db']) )
+
+def getEventByPage( page, itemsPerPage ):
+    if page < 1 or itemsPerPage < 1: return ()
+    con = getDBConnection()
+    c = con.cursor()
+    c.execute( 'select * from dailyEvent order by rowid desc limit ?,?', ((page-1)*itemsPerPage,itemsPerPage) )
+    data = c.fetchall()
+    con.commit()
+    con.close()
+    return data
+
 def getLatestEvent( count = 1 ):
-    con = sqlite3.connect( os.sep.join([APPLICATION_PATH, 'event.db']) )
+    con = getDBConnection()
     c = con.cursor()
     c.execute( 'select * from dailyEvent order by rowid desc limit ?', (count,) )
     data = c.fetchall()
@@ -63,7 +79,7 @@ class dailyEvent:
 	    finished = 1
 	else:
 	    finished = 0
-	con = sqlite3.connect( os.sep.join( [APPLICATION_PATH,'event.db'] ) )
+	con = getDBConnection()
 	c = con.cursor()
 	c.execute( 'insert into dailyEvent(description, startTime, endTime, timeouted, finished)  values  (?, ?, ?, ?, ?)',
 		    ( unicode(self.description),

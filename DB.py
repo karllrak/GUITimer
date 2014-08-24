@@ -49,12 +49,16 @@ class dailyEvent:
 	self.timeouted = False
 	self.description = u'无描述'
 	self.endTime = time.strftime( '%Y-%m-%d %H:%M:%S' )
+
 	self.complete = False
 	self.stored = False
+	self.discarded = False
 
     def setComplete( self ):
 	self.complete = True
 
+    def setDiscarded( self ):
+	self.discarded = True
     def isComplete( self ):
 	return self.complete
 
@@ -75,18 +79,17 @@ class dailyEvent:
 	    return
 	else:
 	    self.stored = True
-	if self.complete:
-	    finished = 1
-	else:
-	    finished = 0
+	finished = 1 if self.complete else 0
+	discarded = 1 if self.discarded else 0
 	con = getDBConnection()
 	c = con.cursor()
-	c.execute( 'insert into dailyEvent(description, startTime, endTime, timeouted, finished)  values  (?, ?, ?, ?, ?)',
+	c.execute( 'insert into dailyEvent(description, startTime, endTime, timeouted, finished, discarded)  values  (?, ?, ?, ?, ?, ?)',
 		    ( unicode(self.description),
 		unicode(self.startTime),
 		unicode(self.endTime),
 		1 if self.timeouted else 0,
-		finished),
+		finished,
+		discarded),
 		)
 	con.commit()
 	con.close()

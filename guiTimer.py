@@ -9,7 +9,6 @@ import sys
 import time
 import datetime
 import DB
-import pdb
 
 
 class MainWidget( QWidget ):
@@ -79,20 +78,22 @@ class MainWidget( QWidget ):
 	self.ui.lineEditTimeCount.setFocus()
 	self.msgLabel = QLabel( u'<h1>时间到!</h1><img src=":/img/38.gif"/>' )
 	self.ui.btnComplete.setDisabled( True )
+	self.ui.btnDiscard.setDisabled( True )
 
     def createConnections( self ):
-	self.connect( self.ui.btnSetStartTime, SIGNAL('clicked()'),\
-		self.updateStartTime )
 	self.connect( self.ui.btnStartTimer, SIGNAL('clicked()'), \
 		self.startTimer )
 	self.connect( self.ui.btnComplete, SIGNAL('clicked()'), \
 		self.missionComplete )
+	self.connect( self.ui.btnDiscard, SIGNAL('clicked()'), \
+		self.missionDiscarded )
 
     def startTimer( self ):
 	self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 
 	self.ui.labelStartTime.setText( self.nowTimeText )
 	self.ui.btnStartTimer.setDisabled( True )
 	self.ui.btnComplete.setDisabled( False )
+	self.ui.btnDiscard.setDisabled( False )
 
 	self.timer = QTimer()
 	minute = self.ui.lineEditTimeCount.text()
@@ -130,6 +131,16 @@ class MainWidget( QWidget ):
 	    self.intervalTimer.start( self.intervalNoticeTime*60*1000 )
 
 
+    @pyqtSlot()
+    def missionDiscarded( self ):
+	self.mission.setEndTimeNow()
+	self.mission.storeEvent()
+	self.intervalCount = 0
+	self.ui.btnComplete.setDisabled( True )
+	self.ui.btnDiscard.setDisabled( True )
+	self.ui.btnStartTimer.setDisabled( False )
+	#TODO duplicated code!
+	#TODO ui state change waiting -> in progress -> waiting
 
     @pyqtSlot()
     def intervalNoticeMsg( self ):
@@ -145,6 +156,7 @@ class MainWidget( QWidget ):
 	self.mission.setComplete()
 	self.mission.storeEvent()
 	self.ui.btnComplete.setDisabled( True )
+	self.ui.btnDiscard.setDisabled( True )
 	self.ui.btnStartTimer.setDisabled( False )
 
     @pyqtSlot()

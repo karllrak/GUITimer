@@ -37,7 +37,8 @@ if '__main__' == __name__:
     data = DB.getEventByPage( 1, 5 )
     w = EventShowWidget()
     t = w.ui.tableShowWidget
-    for i in range( 5 ):
+    #TODO 6 is a magic number, which is the number of columns in table DailyEvent see DB Schema
+    for i in range( 6 ):
 	w.ui.tableShowWidget.insertColumn( 0 )
     w.ui.tableShowWidget.setColumnWidth( 0, int( 1.5 * t.columnWidth( 0 ) ) )
     for i in range( len(data) ):

@@ -99,6 +99,7 @@ class MainWidget( QWidget ):
 	minute = self.ui.lineEditTimeCount.text()
 	try:
 	    minute = float( minute )
+	    self.timeCount = minute
 	except ValueError:
 	    return
 	self.timer.singleShot( minute*60*1000, self, SLOT('timeOutMsg()'))
@@ -139,6 +140,8 @@ class MainWidget( QWidget ):
 	self.ui.btnComplete.setDisabled( True )
 	self.ui.btnDiscard.setDisabled( True )
 	self.ui.btnStartTimer.setDisabled( False )
+	self.updateProgress()
+	self.intervalTimer.stop()
 	#TODO duplicated code!
 	#TODO ui state change waiting -> in progress -> waiting
 
@@ -147,6 +150,7 @@ class MainWidget( QWidget ):
 	if not self.mission.isComplete():
 	    self.intervalCount = self.intervalCount + 1
 	    self.systemTray.showMessage( u'友情提醒', u'已经过了'+unicode( self.intervalCount )+u'个'+unicode(self.intervalNoticeTime)+u'分钟\n'+u'有木有!'*20, QSystemTrayIcon.Information, 2000 )
+	    self.updateProgress()
 
 
     @pyqtSlot()
@@ -158,6 +162,13 @@ class MainWidget( QWidget ):
 	self.ui.btnComplete.setDisabled( True )
 	self.ui.btnDiscard.setDisabled( True )
 	self.ui.btnStartTimer.setDisabled( False )
+	self.updateProgress()
+
+    @pyqtSlot()
+    def noTrayClose( self ):
+	self.quitWithoutTray = True
+	self.close()
+	sys.exit()
 
     @pyqtSlot()
     def timeOutMsg( self ):
@@ -171,12 +182,6 @@ class MainWidget( QWidget ):
 	self.mainTimerTimeout = True
 
     @pyqtSlot()
-    def noTrayClose( self ):
-	self.quitWithoutTray = True
-	self.close()
-	sys.exit()
-
-    @pyqtSlot()
     def updateStartTime( self ):
 	text = self.ui.lineEditStartTime.text()
 	if len(text) < 1:
@@ -186,6 +191,16 @@ class MainWidget( QWidget ):
 	    infer = TimeInference( text )
 
 	self.ui.labelStartTime.setText( text )
+
+    def updateProgress( self ):
+	startTime = datetime.datetime.strptime( self.mission.startTime,
+	    '%Y-%m-%d %H:%M:%S' )
+	nowTime = datetime.datetime.now()
+	usedSeconds = (nowTime-startTime).seconds 
+	progress = usedSeconds / float( self.timeCount*60 )
+	progress = 1 if progress > 1 else progress
+	self.ui.progressBar.setValue( int( progress * 100 ) )
+	pass
 
     def createSystemTray( self ):
 	self.systemTray = QSystemTrayIcon( self )

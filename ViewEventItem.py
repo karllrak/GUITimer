@@ -6,16 +6,16 @@ from PyQt4.QtGui import *
 
 class EventShowWidget( QWidget ):
     def __init__( self ):
-	QWidget.__init__( self )
-	self.setupUi()
+        QWidget.__init__( self )
+        self.setupUi()
     def setupUi( self ):
-	self.ui = ui_dataShow.Ui_Form()
-	self.ui.setupUi( self )
-	#setup the contentShowWidget
-	vLayout = QVBoxLayout()
-	self.ui.tableShowWidget = QTableWidget( self )
-	vLayout.addWidget( self.ui.tableShowWidget )
-	self.ui.contentShowWidget.setLayout( vLayout )
+        self.ui = ui_dataShow.Ui_Form()
+        self.ui.setupUi( self )
+        #setup the contentShowWidget
+        vLayout = QVBoxLayout()
+        self.ui.tableShowWidget = QTableWidget( self )
+        vLayout.addWidget( self.ui.tableShowWidget )
+        self.ui.contentShowWidget.setLayout( vLayout )
 
 if '__main__' == __name__:
     import sys

@@ -25,7 +25,7 @@ def insertDataToRow( widget, data, rowNumber ):
             d = u'是'
         widget.setItem( rowNumber, j, QTableWidgetItem( d ) )
 
-    if abs( delta.days ) < 60: 
+    if abs( delta.days ) < 60:
         color = QColor( 255+delta.days*4, 140+delta.days*2, 75-delta.days*3 )#TODO a better way to show time difference using color
         dyeRow( widget=widget, rowNo=rowNumber, columnRange=(0,len(data)), color=color )
 

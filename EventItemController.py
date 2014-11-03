@@ -40,7 +40,7 @@ def loadData(tableWidget, dataList):
         #load the dataList to table
         insertDataToRow( widget=tableWidget.ui.tableShowWidget, data=dataList[i], rowNumber=i )
 
-if '__main__' == __name__:
+def main():
     import sys
     app = QApplication( sys.argv )
     dataCount = 20
@@ -59,3 +59,6 @@ if '__main__' == __name__:
 
     w.show()
     sys.exit( app.exec_() )
+
+if '__main__' == __name__:
+    main()

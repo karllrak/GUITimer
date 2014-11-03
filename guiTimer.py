@@ -4,6 +4,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ui.ui_guiTimer import Ui_MainWindow
+from MyLabel import MyLabel
 import ui.qrc_guiTimer_rc
 import sys
 import time
@@ -76,7 +77,7 @@ class MyMainWindow(QMainWindow):
         self.ui.labelStartTime.setText(self.nowTimeText)
         self.ui.labelEndTime.setText('')
         self.ui.lineEditTimeCount.setFocus()
-        self.msgLabel = QLabel(u'<h1>时间到!</h1><img src=":/img/38.gif"/>',)
+        self.msgLabel = MyLabel(u'<h1>时间到!</h1><img src=":/img/38.gif"/>',)
         self.msgLabel.hide()
         self.msgLabel.setFocusPolicy(Qt.NoFocus)
         self.ui.btnComplete.setDisabled(True)

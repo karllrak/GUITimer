@@ -5,6 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ui.ui_guiTimer import Ui_MainWindow
 from MyLabel import MyLabel
+from EventItemController import getWidgetWithData
 import ui.qrc_guiTimer_rc
 import sys
 import time
@@ -20,6 +21,7 @@ class MyMainWindow(QMainWindow):
         self.createSystemTray()
         self.createUI()
         self.createConnections()
+        self.createActions()
         self.setWindowTitle(u'定时器')
         #then the size policy
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
@@ -90,6 +92,16 @@ class MyMainWindow(QMainWindow):
                 self.missionComplete)
         self.connect(self.ui.btnDiscard, SIGNAL('clicked()'), \
                 self.missionDiscarded)
+
+    def createActions(self):
+        self.connect(self.ui.actViewData, SIGNAL('triggered()'),
+                self.viewData)
+
+    def viewData(self):
+        self.dataWidget = getattr(self, 'dataWidget', False)
+        if not self.dataWidget:
+            self.dataWidget = getWidgetWithData()
+        self.dataWidget.show()
 
     def startTimer(self):
         self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 

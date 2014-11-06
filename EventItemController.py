@@ -40,12 +40,18 @@ def loadData(tableWidget, dataList):
         #load the dataList to table
         insertDataToRow( widget=tableWidget.ui.tableShowWidget, data=dataList[i], rowNumber=i )
 
+def getWidgetWithData():
+    w = EventShowWidget()
+    data = DB.getEventByPage(1, 5)
+    loadData(w, data)
+    return w
+
 def main():
     import sys
-    app = QApplication( sys.argv )
+    app = QApplication(sys.argv)
     dataCount = 20
     #data = DB.getLatestEvent( dataCount )
-    data = DB.getEventByPage( 1, 5 )
+    data = DB.getEventByPage(1, 5)
     w = EventShowWidget()
     loadData(w, data)
 

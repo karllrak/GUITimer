@@ -1,7 +1,13 @@
+PREVIOUS INSTANCE
+    if there is a guitimer running, bring it to foreground/ show the mainwindow
+
 BETTER WAY RATHER THAN SUBCLASS
   *?*    how to add keyevent to a label
-  	 1. python way of dynamically changing keyEvent function
-	 2. What about c++?
+  1. python way of dynamically changing keyEvent function
+  2. What about c++?
+    ::Use QT action
+    ::but you need to CONNECT for a label, subclassing is eaier to change
+
 SHORTCUT
     add a label show all shortcut
     configurable shorcuts
@@ -13,11 +19,13 @@ personal event Management
 DATABASESHOW
 FIXME:
     [done!] use a right path(the same path with guitimer.py) instead of 'event.db'
-	:: use getattr( sys, 'executable', False ): in config.py
+    :: use getattr( sys, 'executable', False ): in config.py
 
 FIXME:
-    when using a 10min interval notice, and complete a task. 
+    when using a 10min interval notice, and complete a task.
     Then start another, the notice remains and does not start a new 10min count.(it will notice you in 3minutes or some other)
     and why the interval changeTo 5min?
 
-	::the startTimer function is too large with too much responsibilities
+    ::the startTimer function is too large with too much responsibilities
+FIXME:
+    startBtn does not update progress

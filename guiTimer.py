@@ -3,6 +3,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4.QtNetwork import QLocalServer, QLocalSocket
 from ui.ui_guiTimer import Ui_MainWindow
 from MyLabel import MyLabel
 from EventItemController import getWidgetWithData
@@ -12,6 +13,7 @@ import time
 import datetime
 import DB
 
+LOCALSERVER = None
 
 class MyMainWindow(QMainWindow):
     """ the widget """
@@ -96,21 +98,6 @@ class MyMainWindow(QMainWindow):
     def createActions(self):
         self.connect(self.ui.actViewData, SIGNAL('triggered()'),
                 self.viewData)
-        self.actionToggleShow = QAction(self)
-        #self.actionToggleShow.setShortcut('Ctrl+alt+G')
-        #self.actionToggleShow.setShortcut(QKeySequence('Ctrl+alt+G'))
-        self.actionToggleShow.setShortcut(QKeySequence(Qt.CTRL+Qt.ALT+Qt.Key_G))
-        self.actionToggleShow.setShortcutContext(Qt.ApplicationShortcut)
-        self.connect(self.actionToggleShow, SIGNAL('triggered()'),
-                self.toggleShow)
-
-    @pyqtSlot()
-    def toggleShow(self):
-        print 'toggleShow'
-        if self.isVisible():
-            self.hide()
-        else:
-            self.show()
 
     @pyqtSlot()
     def viewData(self):
@@ -252,9 +239,31 @@ class MyMainWindow(QMainWindow):
         self.systemTray.show()
     pass
 
+def showMainWindow():
+    global mywindow
+    print 're entering the application!'
+    mywindow.show()
+
+def testSingleInstanceOrExit():
+    connected = False
+    #try connect to QLocalServer
+    local_sock = QLocalSocket()
+    import sys
+    QObject.connect(local_sock, SIGNAL('connected()'), sys.exit)
+    local_sock.connectToServer(qApp.applicationName())
+    global LOCALSERVER
+    if not connected:
+        LOCALSERVER = QLocalServer()
+        LOCALSERVER.listen(qApp.applicationName())
+        QObject.connect(LOCALSERVER, SIGNAL('newConnection()'), showMainWindow)
+    else:
+        pass
+
+    pass
 if __name__ == "__main__":
     a = QApplication(sys.argv)
     a.setQuitOnLastWindowClosed(False)
+    testSingleInstanceOrExit()
     mywindow = MyMainWindow()
     mywindow.show()
     sys.exit(a.exec_())

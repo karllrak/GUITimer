@@ -81,9 +81,9 @@ class MyMainWindow(QMainWindow):
         self.ui.labelStartTime.setText(self.nowTimeText)
         self.ui.labelEndTime.setText('')
         self.ui.lineEditTimeCount.setFocus()
-        self.msgLabel = MyLabel(u'<h1>时间到!</h1><img src=":/img/38.gif"/>',)
+        self.msgLabel = MyLabel(u'<h1>时间到!</h1><img src=":/img/38.gif"/>')
         self.msgLabel.hide()
-        self.msgLabel.setFocusPolicy(Qt.NoFocus)
+        self.msgLabel.setBuddy(self)
         self.ui.btnComplete.setDisabled(True)
         self.ui.btnDiscard.setDisabled(True)
 
@@ -108,11 +108,6 @@ class MyMainWindow(QMainWindow):
 
     def startTimer(self):
         self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 
-        self.ui.labelStartTime.setText(self.nowTimeText)
-        self.ui.btnStartTimer.setDisabled(True)
-        self.ui.btnComplete.setDisabled(False)
-        self.ui.btnDiscard.setDisabled(False)
-
         self.timer = QTimer()
         minute = self.ui.lineEditTimeCount.text()
         try:
@@ -120,6 +115,11 @@ class MyMainWindow(QMainWindow):
             self.timeCount = minute
         except ValueError:
             return
+        self.ui.labelStartTime.setText(self.nowTimeText)
+        self.ui.btnStartTimer.setDisabled(True)
+        self.ui.btnComplete.setDisabled(False)
+        self.ui.btnDiscard.setDisabled(False)
+
         self.timer.singleShot(minute*60*1000, self, SLOT('timeOutMsg()'))
         self.mainTimerTimeout = False
 
@@ -192,11 +192,8 @@ class MyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def timeOutMsg(self):
-        #self.msgLabel.setWindowFlags(Qt.FramelessWindowHint)
-        self.msgLabel.setGeometry(400, 400, self.size().width(), self.size().height())
-        #self.timer.singleShot(2800, self.msgLabel, SLOT('hide()'))
-        self.msgLabel.raise_()
-        self.msgLabel.activateWindow()
+        self.msgLabel.setWindowFlags(Qt.FramelessWindowHint)
+        self.msgLabel.setGeometry(self.msgLabel.width(), self.msgLabel.height(), self.size().width(), self.size().height())
         self.msgLabel.show()
         self.mission.setTimeouted()
         self.mainTimerTimeout = True

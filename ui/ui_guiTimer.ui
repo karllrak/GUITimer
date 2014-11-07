@@ -215,12 +215,12 @@ background-color: rgb(253, 193, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>459</width>
-     <height>19</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>查看</string>
+     <string>查看(&amp;F)</string>
     </property>
     <addaction name="actViewData"/>
    </widget>
@@ -229,7 +229,7 @@ background-color: rgb(253, 193, 255);</string>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actViewData">
    <property name="text">
-    <string>数据</string>
+    <string>数据(&amp;D)</string>
    </property>
   </action>
  </widget>

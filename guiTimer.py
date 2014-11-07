@@ -96,7 +96,23 @@ class MyMainWindow(QMainWindow):
     def createActions(self):
         self.connect(self.ui.actViewData, SIGNAL('triggered()'),
                 self.viewData)
+        self.actionToggleShow = QAction(self)
+        #self.actionToggleShow.setShortcut('Ctrl+alt+G')
+        #self.actionToggleShow.setShortcut(QKeySequence('Ctrl+alt+G'))
+        self.actionToggleShow.setShortcut(QKeySequence(Qt.CTRL+Qt.ALT+Qt.Key_G))
+        self.actionToggleShow.setShortcutContext(Qt.ApplicationShortcut)
+        self.connect(self.actionToggleShow, SIGNAL('triggered()'),
+                self.toggleShow)
 
+    @pyqtSlot()
+    def toggleShow(self):
+        print 'toggleShow'
+        if self.isVisible():
+            self.hide()
+        else:
+            self.show()
+
+    @pyqtSlot()
     def viewData(self):
         self.dataWidget = getattr(self, 'dataWidget', False)
         if not self.dataWidget:

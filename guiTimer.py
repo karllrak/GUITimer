@@ -96,6 +96,7 @@ class MyMainWindow(QMainWindow):
                 self.missionDiscarded)
 
     def createActions(self):
+        self.ui.actViewData.setShortcut('Alt+D')
         self.connect(self.ui.actViewData, SIGNAL('triggered()'),
                 self.viewData)
 
@@ -104,7 +105,10 @@ class MyMainWindow(QMainWindow):
         self.dataWidget = getattr(self, 'dataWidget', False)
         if not self.dataWidget:
             self.dataWidget = getWidgetWithData()
-        self.dataWidget.show()
+        if self.dataWidget.isVisible():
+            self.dataWidget.hide()
+        else:
+            self.dataWidget.show()
 
     def startTimer(self):
         self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 

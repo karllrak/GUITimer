@@ -44,6 +44,13 @@ def getWidgetWithData():
     w = EventShowWidget()
     data = DB.getEventByPage(1, 5)
     loadData(w, data)
+    w.resize(700, 400)
+    w.ui.tableShowWidget.setHorizontalHeaderLabels(
+            [u'描述',
+                'startTime',
+                'endTime',
+                u'已完成',
+                u'超时'])
     return w
 
 def main():

@@ -71,7 +71,6 @@
        <height>10</height>
       </size>
      </property>
-     <zorder>horizontalSpacer</zorder>
     </widget>
    </item>
    <item>
@@ -95,14 +94,14 @@
      <item>
       <widget class="QPushButton" name="btnPrevPage">
        <property name="text">
-        <string>上一页</string>
+        <string>上一页(&amp;P)</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnNextPage">
        <property name="text">
-        <string>下一页</string>
+        <string>下一页(&amp;N)</string>
        </property>
       </widget>
      </item>

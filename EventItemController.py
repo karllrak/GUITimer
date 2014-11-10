@@ -5,7 +5,6 @@ import DB
 import datetime
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from ViewEventItem import EventShowWidget
 
 def dyeRow( widget, rowNo, columnRange, color ):
     for i in range( columnRange[0], columnRange[1] ):
@@ -31,6 +30,12 @@ def insertDataToRow( widget, data, rowNumber ):
 
 def loadData(tableWidget, dataList):
     t = tableWidget.ui.tableShowWidget
+    rowCount = t.rowCount()
+    for i in range(rowCount):
+        t.removeRow(0)
+    colCount = t.columnCount()
+    for i in range(colCount):
+        t.removeColumn(0)
     #TODO 6 is a magic number, which is the number of columns in table DailyEvent see DB Schema
     for i in range( 6 ):
         tableWidget.ui.tableShowWidget.insertColumn( 0 )
@@ -40,11 +45,12 @@ def loadData(tableWidget, dataList):
         #load the dataList to table
         insertDataToRow( widget=tableWidget.ui.tableShowWidget, data=dataList[i], rowNumber=i )
 
+from ViewEventItem import EventShowWidget
 def getWidgetWithData():
     w = EventShowWidget()
     data = DB.getEventByPage(1, 5)
     loadData(w, data)
-    w.resize(700, 400)
+    w.resize(700, 350)
     w.ui.tableShowWidget.setHorizontalHeaderLabels(
             [u'描述',
                 'startTime',
@@ -59,17 +65,7 @@ def main():
     dataCount = 20
     #data = DB.getLatestEvent( dataCount )
     data = DB.getEventByPage(1, 5)
-    w = EventShowWidget()
-    loadData(w, data)
-
-    w.ui.tableShowWidget.setHorizontalHeaderLabels(
-            [u'描述',
-                'startTime',
-                'endTime',
-                u'已完成',
-                u'超时']
-            )
-
+    w = getWidgetWithData()
     w.show()
     sys.exit( app.exec_() )
 

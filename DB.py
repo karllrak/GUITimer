@@ -70,7 +70,7 @@ class dailyEvent:
         self.timeouted = True
 
     def setStartTimeNow(self):
-        self.startTime = time.strftime('%Y-%m-%d %H:%M:%S') 
+        self.startTime = time.strftime('%Y-%m-%d %H:%M:%S')
 
     def setDescription(self, s):
         self.description = s

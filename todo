@@ -1,10 +1,11 @@
 PREVIOUS INSTANCE
-    if there is a guitimer running, bring it to foreground/ show the mainwindow
+    [done!]if there is a guitimer running, bring it to foreground/ show the mainwindow
+    ::use QLocalServer & QLocalSocket
 
 BETTER WAY RATHER THAN SUBCLASS
-  *?*    how to add keyevent to a label
-  1. python way of dynamically changing keyEvent function
-  2. What about c++?
+    [done!]*?*how to add keyevent to a label
+    1. python way of dynamically changing keyEvent function
+    2. What about c++?
     ::Use QT action
     ::but you need to CONNECT for a label, subclassing is eaier to change
 
@@ -14,8 +15,10 @@ SHORTCUT
 show how many interval have passed and show in the intervalNoticeMsg as well as the main window
 
 personal event Management
-    [done!] add event log support using sqlite3 
+    [done!] add event log support using sqlite3
 
+PERSISTENT DATA
+    test if mongoDB/MySQL is available, and auto backup your data using mongo. Log(with rotate) the backUp operation
 DATABASESHOW
 FIXME:
     [done!] use a right path(the same path with guitimer.py) instead of 'event.db'

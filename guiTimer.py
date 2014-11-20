@@ -111,8 +111,8 @@ class MyMainWindow(QMainWindow):
             self.dataWidget.show()
 
     def startTimer(self):
-        self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8') 
-        self.timer = QTimer()
+        #ui update
+        self.nowTimeText = time.strftime(u'%H:%M:%S'.encode('utf-8')).decode('utf-8')
         minute = self.ui.lineEditTimeCount.text()
         try:
             minute = float(minute)
@@ -120,15 +120,15 @@ class MyMainWindow(QMainWindow):
         except ValueError:
             return
         self.ui.labelStartTime.setText(self.nowTimeText)
+        dueTimeText = datetime.datetime.fromtimestamp(time.time() + minute*60).strftime(u'%H:%M:%S'.encode('utf8')).decode('utf8')
+        self.ui.labelEndTime.setText(dueTimeText)
+
         self.ui.btnStartTimer.setDisabled(True)
         self.ui.btnComplete.setDisabled(False)
         self.ui.btnDiscard.setDisabled(False)
-
-        self.timer.singleShot(minute*60*1000, self, SLOT('timeOutMsg()'))
-        self.mainTimerTimeout = False
-
-        dueTimeText = datetime.datetime.fromtimestamp(time.time() + minute*60).strftime(u'%H:%M:%S'.encode('utf8')).decode('utf8')
-        self.ui.labelEndTime.setText(dueTimeText)
+        #then timer
+        self.mainTimer = QTimer()
+        self.mainTimer.singleShot(minute*60*1000, self, SLOT('timeOutMsg()'))
 
         self.mission = DB.dailyEvent()
         desc = self.ui.LEDescription.toPlainText()
@@ -153,19 +153,21 @@ class MyMainWindow(QMainWindow):
             self.intervalCount = 0
             self.intervalTimer.start(self.intervalNoticeTime*60*1000)
 
-
     @pyqtSlot()
     def missionDiscarded(self):
+        #db
         self.mission.setDiscarded()
         self.mission.setEndTimeNow()
         self.mission.storeEvent()
-        self.intervalCount = 0
-
+        #ui
         self.ui.btnComplete.setDisabled(True)
         self.ui.btnDiscard.setDisabled(True)
         self.ui.btnStartTimer.setDisabled(False)
         self.updateProgress()
+        #timers
+        self.mainTimer.stop()
         self.intervalTimer.stop()
+        self.intervalCount = 0
         #TODO duplicated code!
         #TODO ui state change waiting -> in progress -> waiting
 
@@ -179,14 +181,19 @@ class MyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def missionComplete(self):
+        #db
         self.mission.setEndTimeNow()
-        self.intervalCount = 0
         self.mission.setComplete()
         self.mission.storeEvent()
+        #ui
         self.ui.btnComplete.setDisabled(True)
         self.ui.btnDiscard.setDisabled(True)
         self.ui.btnStartTimer.setDisabled(False)
         self.updateProgress()
+        #timer
+        self.intervalCount = 0
+        if self.mainTimer:
+            self.mainTimer.stop()
 
     @pyqtSlot()
     def noTrayClose(self):
@@ -196,11 +203,12 @@ class MyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def timeOutMsg(self):
-        self.msgLabel.setWindowFlags(Qt.FramelessWindowHint)
-        self.msgLabel.setGeometry(self.msgLabel.width(), self.msgLabel.height(), self.size().width(), self.size().height())
-        self.msgLabel.show()
-        self.mission.setTimeouted()
-        self.mainTimerTimeout = True
+        if self.mainTimer.isActive():
+            self.mainTimer.stop()
+            self.msgLabel.setWindowFlags(Qt.FramelessWindowHint)
+            self.msgLabel.setGeometry(self.msgLabel.width(), self.msgLabel.height(), self.size().width(), self.size().height())
+            self.msgLabel.show()
+            self.mission.setTimeouted()
 
     @pyqtSlot()
     def updateStartTime(self):

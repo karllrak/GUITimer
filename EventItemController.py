@@ -44,6 +44,13 @@ def loadData(tableWidget, dataList):
         tableWidget.ui.tableShowWidget.insertRow( i )
         #load the dataList to table
         insertDataToRow( widget=tableWidget.ui.tableShowWidget, data=dataList[i], rowNumber=i )
+    t.setHorizontalHeaderLabels(
+            [u'描述',
+                'startTime',
+                'endTime',
+                u'已完成',
+                u'超时',
+                u'放弃'])
 
 from ViewEventItem import EventShowWidget
 def getWidgetWithData():
@@ -56,7 +63,8 @@ def getWidgetWithData():
                 'startTime',
                 'endTime',
                 u'已完成',
-                u'超时'])
+                u'超时',
+                u'放弃'])
     return w
 
 def main():

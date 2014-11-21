@@ -10,7 +10,7 @@ from EventItemController import getWidgetWithData
 import ui.qrc_guiTimer_rc
 import sys
 import time
-import datetime
+from datetime import datetime, timedelta
 import DB
 
 LOCALSERVER = None
@@ -120,7 +120,8 @@ class MyMainWindow(QMainWindow):
         except ValueError:
             return
         self.ui.labelStartTime.setText(self.nowTimeText)
-        dueTimeText = datetime.datetime.fromtimestamp(time.time() + minute*60).strftime(u'%H:%M:%S'.encode('utf8')).decode('utf8')
+        self.dueTime = datetime.now() + timedelta(seconds=minute*60)
+        dueTimeText = self.dueTime.strftime(u'%H:%M:%S'.encode('utf8')).decode('utf8')
         self.ui.labelEndTime.setText(dueTimeText)
 
         self.ui.btnStartTimer.setDisabled(True)
@@ -203,12 +204,15 @@ class MyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def timeOutMsg(self):
-        if self.mainTimer.isActive():
+        if self.dueTime+timedelta(milliseconds=20) > datetime.now() > self.dueTime and not self.mission.isComplete():
+            #if this is the right timeoutMsg, that is, not a discarded one, so, in the interval
             self.mainTimer.stop()
             self.msgLabel.setWindowFlags(Qt.FramelessWindowHint)
             self.msgLabel.setGeometry(self.msgLabel.width(), self.msgLabel.height(), self.size().width(), self.size().height())
             self.msgLabel.show()
-            self.mission.setTimeouted()
+            #if complete in 30s, marked as not timeouted
+            if datetime.now() > self.dueTime + timedelta(seconds=30):
+                self.mission.setTimeouted()
 
     @pyqtSlot()
     def updateStartTime(self):
@@ -222,10 +226,9 @@ class MyMainWindow(QMainWindow):
         self.ui.labelStartTime.setText(text)
 
     def updateProgress(self):
-        startTime = datetime.datetime.strptime(self.mission.startTime,
-                '%Y-%m-%d %H:%M:%S')
-        nowTime = datetime.datetime.now()
-        usedSeconds = (nowTime-startTime).seconds 
+        startTime = self.mission.startTime
+        nowTime = datetime.now()
+        usedSeconds = (nowTime-startTime).seconds
         progress = usedSeconds / float(self.timeCount*60)
         progress = 1 if progress > 1 else progress
         self.ui.progressBar.setValue(int(progress * 100))

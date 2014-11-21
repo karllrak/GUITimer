@@ -125,7 +125,7 @@ background-color: rgb(253, 193, 255);</string>
       <item>
        <widget class="QPushButton" name="btnDiscard">
         <property name="text">
-         <string>放弃&amp;d</string>
+         <string>放弃&amp;x</string>
         </property>
        </widget>
       </item>

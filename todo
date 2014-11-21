@@ -21,6 +21,8 @@ PERSISTENT DATA
     test if mongoDB/MySQL is available, and auto backup your data using mongo. Log(with rotate) the backUp operation
 DATABASESHOW
 FIXME:
+    add save config for dataShow window size & table column size
+
     [done!] use a right path(the same path with guitimer.py) instead of 'event.db'
     :: use getattr( sys, 'executable', False ): in config.py
 

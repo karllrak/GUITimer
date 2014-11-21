@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #coding=utf-8
 import sqlite3
-import datetime
+from datetime import datetime
 import time
 import os
 from config import APPLICATION_PATH
@@ -45,10 +45,10 @@ def getLatestEvent(count = 1):
 
 class dailyEvent:
     def __init__(self):
-        self.startTime = time.strftime('%Y-%m-%d %H:%M:%S')
+        self.startTime = datetime.now()
         self.timeouted = False
         self.description = u'无描述'
-        self.endTime = time.strftime('%Y-%m-%d %H:%M:%S')
+        self.endTime = datetime.now()
 
         self.complete = False
         self.stored = False
@@ -70,13 +70,13 @@ class dailyEvent:
         self.timeouted = True
 
     def setStartTimeNow(self):
-        self.startTime = time.strftime('%Y-%m-%d %H:%M:%S')
+        self.startTime = datetime.now()
 
     def setDescription(self, s):
         self.description = s
 
     def setEndTimeNow(self):
-        self.endTime = time.strftime('%Y-%m-%d %H:%M:%S')
+        self.endTime = datetime.now()
 
     def storeEvent(self, finished=1):
         if self.stored:
@@ -89,8 +89,8 @@ class dailyEvent:
         c = con.cursor()
         c.execute('insert into dailyEvent(description, startTime, endTime, timeouted, finished, discarded)  values  (?, ?, ?, ?, ?, ?)',
                 (unicode(self.description),
-                    unicode(self.startTime),
-                    unicode(self.endTime),
+                    unicode(self.startTime.strftime('%Y-%m-%d %H:%M:%S')),
+                    unicode(self.endTime.strftime('%Y-%m-%d %H:%M:%S')),
                     1 if self.timeouted else 0,
                     finished,
                     discarded),

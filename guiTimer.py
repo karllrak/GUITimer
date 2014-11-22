@@ -185,6 +185,10 @@ class MyMainWindow(QMainWindow):
         #db
         self.mission.setEndTimeNow()
         self.mission.setComplete()
+        #if complete in 30s, marked as not timeouted
+        if datetime.now() > self.dueTime + timedelta(seconds=30):
+            self.mission.setTimeouted()
+
         self.mission.storeEvent()
         #ui
         self.ui.btnComplete.setDisabled(True)
@@ -210,9 +214,6 @@ class MyMainWindow(QMainWindow):
             self.msgLabel.setWindowFlags(Qt.FramelessWindowHint)
             self.msgLabel.setGeometry(self.msgLabel.width(), self.msgLabel.height(), self.size().width(), self.size().height())
             self.msgLabel.show()
-            #if complete in 30s, marked as not timeouted
-            if datetime.now() > self.dueTime + timedelta(seconds=30):
-                self.mission.setTimeouted()
 
     @pyqtSlot()
     def updateStartTime(self):

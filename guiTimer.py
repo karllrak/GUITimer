@@ -208,7 +208,7 @@ class MyMainWindow(QMainWindow):
 
     @pyqtSlot()
     def timeOutMsg(self):
-        if self.dueTime+timedelta(milliseconds=20) > datetime.now() > self.dueTime and not self.mission.isComplete():
+        if self.dueTime+timedelta(milliseconds=100) > datetime.now() > self.dueTime and not self.mission.isComplete():
             #if this is the right timeoutMsg, that is, not a discarded one, so, in the interval
             self.mainTimer.stop()
             self.msgLabel.setWindowFlags(Qt.FramelessWindowHint)
@@ -263,21 +263,39 @@ def testSingleInstanceOrExit():
     local_sock = QLocalSocket()
     import sys
     QObject.connect(local_sock, SIGNAL('connected()'), sys.exit)
-    local_sock.connectToServer(qApp.applicationName())
+    connected = local_sock.connectToServer(qApp.applicationName())
     global LOCALSERVER
     if not connected:
         LOCALSERVER = QLocalServer()
-        LOCALSERVER.listen(qApp.applicationName())
+        print 'setting up localserver', qApp.applicationName()
+        ret = LOCALSERVER.listen(qApp.applicationName())
+        if not ret:
+            import os
+            try:
+                #todo not good way to remove /tmp/guiTimer.py
+                os.remove('/tmp/'+qApp.applicationName())
+                ret = LOCALSERVER.listen(qApp.applicationName())
+            except:
+                raise Exception('LOCALSERVER listen failed'
+                        'you may need to remove /tmp/guiTimer.py manually')
         QObject.connect(LOCALSERVER, SIGNAL('newConnection()'), showMainWindow)
     else:
+        print 'local socket connected'
         pass
 
     pass
+def clearSockets():
+    global LOCALSERVER
+    if LOCALSERVER:
+        LOCALSERVER.close()
+
 if __name__ == "__main__":
     a = QApplication(sys.argv)
     a.setQuitOnLastWindowClosed(False)
     testSingleInstanceOrExit()
     mywindow = MyMainWindow()
     mywindow.show()
+    import atexit
+    atexit.register(clearSockets)
     sys.exit(a.exec_())
 

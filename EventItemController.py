@@ -52,11 +52,13 @@ def loadData(tableWidget, dataList):
                 u'超时',
                 u'放弃'])
 
+#in case recursive import below
 from ViewEventItem import EventShowWidget
 def getWidgetWithData():
     w = EventShowWidget()
     data = DB.getEventByPage(1, 5)
     loadData(w, data)
+    loadConfig('dataShowTable', w)
     w.resize(700, 350)
     w.ui.tableShowWidget.setHorizontalHeaderLabels(
             [u'描述',
@@ -71,11 +73,10 @@ def main():
     import sys
     app = QApplication(sys.argv)
     dataCount = 20
-    #data = DB.getLatestEvent( dataCount )
     data = DB.getEventByPage(1, 5)
     w = getWidgetWithData()
     w.show()
-    sys.exit( app.exec_() )
+    sys.exit(app.exec_())
 
 if '__main__' == __name__:
     main()

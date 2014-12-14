@@ -255,7 +255,11 @@ class MyMainWindow(QMainWindow):
 def showMainWindow():
     global mywindow
     print 're entering the application!'
-    mywindow.show()
+    if mywindow.hasFocus():
+        pass
+    else:
+        mywindow.hide()
+        mywindow.show()
 
 def testSingleInstanceOrExit():
     connected = False

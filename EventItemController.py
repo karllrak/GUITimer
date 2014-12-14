@@ -5,6 +5,7 @@ import DB
 import datetime
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from config import loadConfig
 
 def dyeRow( widget, rowNo, columnRange, color ):
     for i in range( columnRange[0], columnRange[1] ):
